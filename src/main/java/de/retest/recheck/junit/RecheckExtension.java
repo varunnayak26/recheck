@@ -55,13 +55,13 @@ public class RecheckExtension implements BeforeTestExecutionCallback, AfterTestE
 	 */
 	private Stream<RecheckLifecycle> streamRecheckField( final ExtensionContext context, final Field field ) {
 		final Object testInstance = context.getRequiredTestInstance();
-		final boolean canAccess = unlock( field, testInstance );
+		final boolean accessibility = unlock( field );
 		try {
 			return streamRecheckInstance( field, testInstance );
 		} catch ( IllegalArgumentException | IllegalAccessException e ) {
 			throw new IllegalStateException( e );
 		} finally {
-			lock( field, canAccess );
+			lock( field, accessibility );
 		}
 	}
 
@@ -77,24 +77,24 @@ public class RecheckExtension implements BeforeTestExecutionCallback, AfterTestE
 	}
 
 	private boolean isRecheck( final Field field, final Object ofTestInstance ) {
-		final boolean canAccess = unlock( field, ofTestInstance );
+		final boolean accessibility = unlock( field );
 		try {
 			return RecheckLifecycle.class.isInstance( field.get( ofTestInstance ) );
 		} catch ( IllegalArgumentException | IllegalAccessException e ) {
 			throw new IllegalStateException( e );
 		} finally {
-			lock( field, canAccess );
+			lock( field, accessibility );
 		}
 	}
 
-	private void lock( final Field field, final boolean canAccess ) {
-		field.setAccessible( canAccess );
+	private void lock( final Field field, final boolean accessibility ) {
+		field.setAccessible( accessibility );
 	}
 
-	private boolean unlock( final Field field, final Object testInstance ) {
-		final boolean canAccess = field.canAccess( testInstance );
+	private boolean unlock( final Field field ) {
+		final boolean accessibility = field.isAccessible();
 		field.setAccessible( true );
-		return canAccess;
+		return accessibility;
 	}
 
 }
