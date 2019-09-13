@@ -2,6 +2,7 @@ package de.retest.recheck.ignore;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import java.awt.Rectangle;
 import java.io.Reader;
@@ -9,8 +10,8 @@ import java.io.StringReader;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
+import de.retest.recheck.ignore.Filter.ChangeType;
 import de.retest.recheck.ui.descriptors.Element;
 import de.retest.recheck.ui.diff.AttributeDifference;
 
@@ -24,7 +25,7 @@ class JSFilterImplTest {
 				return new StringReader( "" );
 			}
 		};
-		cut.matches( Mockito.mock( Element.class ) );
+		cut.matches( mock( Element.class ) );
 	}
 
 	@Test
@@ -35,14 +36,14 @@ class JSFilterImplTest {
 				return new StringReader( "asdasd.asd.asd();" );
 			}
 		};
-		cut.matches( Mockito.mock( Element.class ) );
+		cut.matches( mock( Element.class ) );
 	}
 
 	@Test
 	void nonexistent_file_should_not_cause_exception() {
 		final JSFilterImpl cut = new JSFilterImpl( null ) {
 		};
-		cut.matches( Mockito.mock( Element.class ) );
+		cut.matches( mock( Element.class ) );
 	}
 
 	@Test
@@ -53,7 +54,20 @@ class JSFilterImplTest {
 				return new StringReader( "function matches(element) { return true; }" );
 			}
 		};
-		assertThat( cut.matches( Mockito.mock( Element.class ) ) ).isTrue();
+		assertThat( cut.matches( mock( Element.class ) ) ).isTrue();
+	}
+
+	@Test
+	void matches_with_changetype_should_be_called() {
+		final JSFilterImpl cut = new JSFilterImpl( null ) {
+			@Override
+			Reader readScriptFile( final Path path ) {
+				return new StringReader( "function matches(element, changetype) { return changetype == 'inserted'; }" );
+			}
+		};
+		assertThat( cut.matches( mock( Element.class ), ChangeType.Inserted ) ).isTrue();
+		assertThat( cut.matches( mock( Element.class ), ChangeType.Deleted ) ).isFalse();
+		assertThat( cut.matches( mock( Element.class ), ChangeType.Changed ) ).isFalse();
 	}
 
 	@Test
@@ -70,7 +84,7 @@ class JSFilterImplTest {
 								+ "}" );
 			}
 		};
-		assertThat( cut.matches( Mockito.mock( Element.class ) ) ).isTrue();
+		assertThat( cut.matches( mock( Element.class ) ) ).isTrue();
 	}
 
 	@Test
@@ -90,7 +104,7 @@ class JSFilterImplTest {
 								+ "}\n" );
 			}
 		};
-		final Element element = Mockito.mock( Element.class );
+		final Element element = mock( Element.class );
 		assertThat( cut.matches( element, new AttributeDifference( "outline", new Rectangle( 580, 610, 200, 20 ),
 				new Rectangle( 578, 605, 200, 20 ) ) ) ).isTrue();
 		assertThat( cut.matches( element, new AttributeDifference( "outline", new Rectangle( 580, 610, 200, 20 ),
@@ -108,7 +122,7 @@ class JSFilterImplTest {
 								+ "}" );
 			}
 		};
-		final Element element = Mockito.mock( Element.class );
+		final Element element = mock( Element.class );
 		assertThat( cut.matches( element, new AttributeDifference( "outline", "580", "578" ) ) ).isFalse();
 	}
 
@@ -123,7 +137,7 @@ class JSFilterImplTest {
 								+ "}" );
 			}
 		};
-		final Element element = Mockito.mock( Element.class );
+		final Element element = mock( Element.class );
 		assertThrows( ClassCastException.class,
 				() -> cut.matches( element, new AttributeDifference( "outline", "580", "578" ) ) );
 	}
@@ -142,7 +156,7 @@ class JSFilterImplTest {
 								+ "}" );
 			}
 		};
-		final Element element = Mockito.mock( Element.class );
+		final Element element = mock( Element.class );
 		assertThat( cut.matches( element, new AttributeDifference( "background-image",
 				"url(\"https://www2.test.k8s.bigcct.be/.imaging/default/dam/clients/BT_logo.svg.png/jcr:content.png\")",
 				"url(\"http://icullen-website-public-spring4-8:8080/.imaging/default/dam/clients/BT_logo.svg.png/jcr:content.png\")" ) ) )
