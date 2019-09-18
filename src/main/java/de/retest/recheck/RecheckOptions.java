@@ -175,8 +175,8 @@ public class RecheckOptions {
 		/**
 		 * @param namingStrategy
 		 *            The {@link NamingStrategy} that determines how to name tests and suites. Default is
-		 *            {@link JunitbasedNamingStrategy}. Other options include
-		 *            {@link JunitbasedShortNamingStrategy} and {@link ExplicitMutableNamingStrategy}.
+		 *            {@link JunitbasedNamingStrategy}. Other options include {@link JunitbasedShortNamingStrategy} and
+		 *            {@link ExplicitMutableNamingStrategy}.
 		 * @return self
 		 */
 		public RecheckOptionsBuilder namingStrategy( final NamingStrategy namingStrategy ) {
@@ -224,7 +224,8 @@ public class RecheckOptions {
 		 * with {@link #addIgnore(String)}.
 		 *
 		 * @param filterName
-		 *            The filter to use for printing the differences. Default: Loads the ignore files.
+		 *            The filter to use for printing the differences. The String needs the .filter-extension. Default:
+		 *            Loads the ignore files.
 		 * @return self
 		 */
 		public RecheckOptionsBuilder setIgnore( final String filterName ) {
@@ -257,7 +258,7 @@ public class RecheckOptions {
 		 * {@link #setIgnore(String)}.
 		 *
 		 * @param filtername
-		 *            The filter to add to the ignore.
+		 *            The filter to add to the ignore. The String needs the .filter-extension.
 		 * @return self
 		 * @see #setIgnore(String)
 		 */
