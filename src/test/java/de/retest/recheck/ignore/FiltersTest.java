@@ -43,4 +43,11 @@ class FiltersTest {
 		assertThat( filter.matches( element ) ).isFalse();
 		assertThat( filter.matches( element, difference ) ).isTrue();
 	}
+
+	@Test
+	void loading_filterjs_should_load_JavaScript() throws Exception {
+		final Filter filter = Filters.load( Paths.get( getClass().getResource( "file.filter.js" ).toURI() ) );
+		assertThat( filter ).isInstanceOf( JSFilterImpl.class );
+		assertThat( filter.matches( null, null ) ).isTrue();
+	}
 }

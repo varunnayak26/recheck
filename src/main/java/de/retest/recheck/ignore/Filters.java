@@ -1,5 +1,7 @@
 package de.retest.recheck.ignore;
 
+import static de.retest.recheck.ignore.SearchFilterFiles.FILTER_JS_EXTENSION;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +14,9 @@ import de.retest.recheck.review.ignore.io.Loaders;
 public class Filters {
 
 	public static Filter load( final Path path ) throws IOException {
+		if ( path.toString().toLowerCase().endsWith( FILTER_JS_EXTENSION ) ) {
+			return new JSFilterImpl( path );
+		}
 		try ( final Stream<String> filterFileLines = Files.lines( path ) ) {
 			return parse( filterFileLines );
 		}
