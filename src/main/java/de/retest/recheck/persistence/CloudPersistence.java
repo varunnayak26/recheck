@@ -4,6 +4,7 @@ import static de.retest.recheck.XmlTransformerUtil.getXmlTransformer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.nio.file.Paths;
 
@@ -37,7 +38,9 @@ public class CloudPersistence<T extends Persistable> implements Persistence<T> {
 			Runtime.getRuntime().addShutdownHook( new Thread( () -> {
 				try {
 					saveToCloud( identifier );
-				} catch ( final IOException e ) {}
+				} catch ( final IOException e ) {
+					throw new UncheckedIOException( "Could not save test report.", e );
+				}
 			} ) );
 		}
 	}
