@@ -25,12 +25,20 @@ public class CloudPersistence<T extends Persistable> implements Persistence<T> {
 	private final OkHttpClient client = new OkHttpClient();
 
 	public static final String RECHECK_API_KEY = "RECHECK_API_KEY";
+	private static boolean firstTestFlag = true;
 
 	@Override
 	public void save( final URI identifier, final T element ) throws IOException {
 		kryoPersistence.save( identifier, element );
-		if ( identifier.getPath().endsWith( Properties.AGGREGATED_TEST_REPORT_FILE_NAME ) ) {
-			saveToCloud( identifier );
+		// Create a JVM Shutdown Hook for the first test calling save.
+		// The identifier for tests.report does not change for subsequent test executions.
+		if ( firstTestFlag && identifier.getPath().endsWith( Properties.AGGREGATED_TEST_REPORT_FILE_NAME ) ) {
+			firstTestFlag = false; // Reset the flag to prevent multiple Threads being created
+			Runtime.getRuntime().addShutdownHook( new Thread( () -> {
+				try {
+					saveToCloud( identifier );
+				} catch ( final IOException e ) {}
+			} ) );
 		}
 	}
 
